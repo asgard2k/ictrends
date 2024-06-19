@@ -1,0 +1,9 @@
+{
+    "subreddits": [
+        "wallstreetbets",
+        "DeepFuckingValue"
+    ],
+    "interval": 1,
+    "max_count": 100,
+    "max_comment_level": 2
+}
