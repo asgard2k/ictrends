@@ -1,6 +1,7 @@
 import sys
 from datetime import datetime, timedelta
 import praw
+import sys
 
 user_agent = "hot test 1.0 by /u/dangayle"
 r = praw.Reddit(user_agent=user_agent)
