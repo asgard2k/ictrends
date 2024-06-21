@@ -1,28 +1,24 @@
-import sys
-from datetime import datetime, timedelta
-import praw
+sum_cache = {0:0}
 
-user_agent = "hot test 1.0 by /u/dangayle"
-r = praw.Reddit(user_agent=user_agent)
+  
 
-limit = 1000  # Reddit maximum limit
-total_list = []
-submissions = r.subreddit('wallstreetbets').new(limit=limit, time_filter='all')
-submissions_list = [
-    x for x in submissions
-    #if datetime.utcfromtimestamp(x.created_utc) >= an_hour_ago
-]
-total_list += submissions_list
-if len(submissions_list) == limit:
-    submissions = r.subreddit('wallstreetbets').new(
-        # get limit of items past the last item in the total list
-        limit=100, params={"after": total_list[-1].fullname}
-    )
-submissions_list_2 = [
-    # iterate through the submissions generator object
-    x for x in submissions
-    # add item if item.created_utc is newer than an hour ago
-    if datetime.utcfromtimestamp(x.created_utc) >= an_hour_ago
-]
-total_list += submissions_list_2
-print(total_list)
+def number_sum(n):
+
+    '''Returns the sum of the first n numbers'''
+
+    assert(n >= 0), 'n must be >= 0'
+
+    if n in sum_cache:
+        return sum_cache[n]
+    res = n + number_sum(n-1)
+
+    # Add the value to the cache
+    sum_cache[n] = res
+    return res
+
+         
+
+if __name__ == '__main__':
+    from timeit import Timer
+    t = Timer('number_sum(300)', 'from __main__ import number_sum')
+    print('Time: ', t.timeit())

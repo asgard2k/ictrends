@@ -42,7 +42,7 @@ class Post:
             id=praw_submission.id,
             name=praw_submission.name,
             author_id=praw_submission.author.id,
-            author=praw_submission.author,
+            author=praw_submission.author.name,
             title=praw_submission.title,
             url=praw_submission.url,
             permalink=praw_submission.permalink,

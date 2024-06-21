@@ -2,6 +2,7 @@ import re
 import sys
 from markdown import Markdown
 from io import StringIO
+from json import JSONEncoder
 
 # https://stackoverflow.com/a/49146722/330558
 def remove_emoji(string):
@@ -27,11 +28,15 @@ def unmark_element(element, stream=None):
         stream.write(element.tail)
     return stream.getvalue()
 
-
 # patching Markdown
 Markdown.output_formats["plain"] = unmark_element
 __md = Markdown(output_format="plain")
 __md.stripTopLevelTags = False
+
+class MyJsonEncoder(JSONEncoder):
+    def default(self, o):
+        return o.__dict__
+
 
 
 def unmark(text):

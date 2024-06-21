@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "args": ["output.json", "--interval=-1", "--max_count=150"]
+            "args": ["output.json", "--duration=-1", "--max_count=55"]
         }
     ]
 }

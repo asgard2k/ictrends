@@ -8,16 +8,16 @@ import csv
 import praw
 import config
 
-RUN_TEST_CODE = True
+RUN_TEST_CODE = False
 
 if __name__ == "__main__":
 
     logging.basicConfig(
-        level=logging.DEBUG, format=" %(asctime)s -  %(levelname)s -  %(message)s"
+        level=logging.INFO, format=" %(asctime)s -  %(levelname)s -  %(message)s"
     )
-    logging.debug("Start of program")
+    logging.info("Start of program")
 
-    var = config['subreddits']
+    var = config.CONFIG['subreddits']
 
     if RUN_TEST_CODE:
         user_agent = "hot test 1.0 by /u/dangayle"
@@ -74,18 +74,18 @@ if __name__ == "__main__":
         if args.max_comments_level is None:
             args.max_comments_level = config.CONFIG[config.KEY_MAX_COMMENT_LEVEL]
 
-        logging.debug("Loading tickers.csv")
+        logging.info("Loading tickers.csv")
         stockTickers = {}
         with open("tickers.csv", mode="r") as infile:
             reader = csv.reader(infile)
             for row in reader:
                 stockTickers[row[0].split(",")[0]] = {}
 
-        logging.debug("Retrieve Reddit submissions")
+        logging.info("Retrieve Reddit submissions")
         n_hours_ago = (
             None
-            if args.interval <= 0
-            else datetime.now(timezone.utc) - timedelta(hours=args.interval)
+            if args.duration <= 0
+            else datetime.now(timezone.utc) - timedelta(hours=args.duration)
         )
         submissions = SubredditLatest(
             "wallstreetbets",
@@ -94,11 +94,35 @@ if __name__ == "__main__":
             max_comments_level=args.max_comments_level,
         )()
 
-        # Convert submissions to Post objects
-        converted_posts = [Post.Post(x) for x in submissions]
-        print("processed post count", len(converted_posts))
-
         with open(args.file, "w") as f:
-            json.dump(converted_posts, f, default=lambda o: o.__dict__, indent=4)
+            batch_size = 25
+            num_submissions = len(submissions)
+            num_processed = 0
 
-    logging.debug("End of program")
+            f.write('[\n\t')
+
+            for i in range(0, num_submissions, batch_size):
+                logging.info("Processing Iteration %d" % (i / batch_size))
+                # Convert submissions to Post objects
+                converted_posts = [Post.Post.fromSubmission(x) for x in submissions[i : i + min(batch_size, num_submissions-num_processed)]]
+                num_processed += len(converted_posts)
+                logging.info("Iteration %d: Processed post count: %d. Total post count: %d" % (i / batch_size, len(converted_posts), num_processed))
+
+                json_string = json.dumps(converted_posts, default=lambda o: o.__dict__, indent=4)
+
+                 # Remove array brackets
+                str_start_index = json_string.find('{')
+                str_end_index = json_string.rfind('}')
+                json_string = json_string[str_start_index:str_end_index+1]
+
+                f.write(json_string)
+                f.write(",\n")
+
+                # for post in converted_posts:
+                #     json_string = jsonpickle.encode(post)
+                #     f.write(json_string)
+                #     f.write(",\n")
+
+            f.write(']')
+
+    logging.info("End of program")

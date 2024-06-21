@@ -1,20 +1,14 @@
-import pmaw
-import datetime as dt
+def number_sum(n):
 
-my_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-new_list = [print(val, index) for (index, val) in enumerate(my_list) if val % 2 == 0]
+    '''Returns the sum of the first n numbers'''
 
+    assert(n >= 0), 'n must be >= 0'
+    if n == 0:
+        return 0
+    else:
+        return n + number_sum(n-1)  
 
-# reddit = pmaw.PushshiftAPI()
-# after = int(dt.datetime(2023,9,1,0,0).timestamp())
-# before = int(dt.datetime(2023,9,30,23,59).timestamp())
-# limit = 100
-# subreddit = 'wallstreetbets'
-
-# posts = reddit.search_submissions(subreddit=subreddit, limit=1000)
-# post_list = [post for post in posts]
-
-# comments = reddit.search_comments(subreddit=subreddit, limit=limit, before=before, after=after)
-
-# for comment in comments:
-#     print(comment.body)
+if __name__ == '__main__':
+    from timeit import Timer
+    t = Timer('number_sum(30)', 'from __main__ import  number_sum')
+    print('Time: ', t.timeit())

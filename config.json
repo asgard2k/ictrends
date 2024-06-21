@@ -3,7 +3,7 @@
         "wallstreetbets",
         "DeepFuckingValue"
     ],
-    "interval": 1,
+    "duration": 1,
     "max_count": 100,
     "max_comment_level": 2
 }
